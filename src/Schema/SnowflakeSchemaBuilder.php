@@ -145,7 +145,7 @@ class SnowflakeSchemaBuilder extends Builder
         $schema = $this->connection->getConfig('schema') ?? 'PUBLIC';
 
         $result = $this->connection->selectFromWriteConnection(
-            $this->grammar->compileTableExists(),
+            $this->grammar->compileTableExists($schema, $table),
             [$schema, $table]
         );
 
