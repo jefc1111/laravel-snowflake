@@ -15,7 +15,7 @@ class SnowflakeSchemaBuilder extends Builder
     /**
      * Create a new database.
      */
-    public function createDatabase(string $name): bool
+    public function createDatabase($name)
     {
         return $this->connection->statement(
             $this->grammar->compileCreateDatabase($name)
@@ -25,7 +25,7 @@ class SnowflakeSchemaBuilder extends Builder
     /**
      * Drop a database if it exists.
      */
-    public function dropDatabaseIfExists(string $name): bool
+    public function dropDatabaseIfExists($name)
     {
         return $this->connection->statement(
             $this->grammar->compileDropDatabaseIfExists($name)
@@ -57,7 +57,7 @@ class SnowflakeSchemaBuilder extends Builder
      *
      * @return array<int, array{name: string, schema: string|null, size: int|null, rows: int|null, comment: string|null}>
      */
-    public function getTables(): array
+    public function getTables($schema = null): array
     {
         $database = $this->connection->getDatabaseName();
         $schema = $this->connection->getConfig('schema');
@@ -74,7 +74,7 @@ class SnowflakeSchemaBuilder extends Builder
      *
      * @return array<int, array{name: string, schema: string|null, definition: string|null}>
      */
-    public function getViews(): array
+    public function getViews($schema = null): array
     {
         $database = $this->connection->getDatabaseName();
         $schema = $this->connection->getConfig('schema');
@@ -91,7 +91,7 @@ class SnowflakeSchemaBuilder extends Builder
      *
      * @return array<int, array{name: string, type_name: string, type: string, nullable: bool, default: string|null, auto_increment: bool, comment: string|null, generation: array|null}>
      */
-    public function getColumns(string $table): array
+    public function getColumns($table)
     {
         $table = $this->connection->getTablePrefix() . $table;
         $database = $this->connection->getDatabaseName();
@@ -111,7 +111,7 @@ class SnowflakeSchemaBuilder extends Builder
      *
      * @return array<int, array{name: string, columns: array, type: string, unique: bool, primary: bool}>
      */
-    public function getIndexes(string $table): array
+    public function getIndexes($table)
     {
         // Snowflake doesn't have traditional indexes
         // Could query clustering keys here if needed
@@ -123,7 +123,7 @@ class SnowflakeSchemaBuilder extends Builder
      *
      * @return array<int, array{name: string, columns: array, foreign_schema: string, foreign_table: string, foreign_columns: array, on_update: string, on_delete: string}>
      */
-    public function getForeignKeys(string $table): array
+    public function getForeignKeys($table)
     {
         $table = $this->connection->getTablePrefix() . $table;
         $database = $this->connection->getDatabaseName();
@@ -139,7 +139,7 @@ class SnowflakeSchemaBuilder extends Builder
     /**
      * Check if a table exists.
      */
-    public function hasTable($table): bool
+    public function hasTable($table)
     {
         $table = $this->connection->getTablePrefix() . $table;
         $schema = $this->connection->getConfig('schema') ?? 'PUBLIC';
@@ -155,7 +155,7 @@ class SnowflakeSchemaBuilder extends Builder
     /**
      * Check if a column exists on a table.
      */
-    public function hasColumn($table, $column): bool
+    public function hasColumn($table, $column)
     {
         $columns = array_map(
             fn ($col) => strtolower($col['name']),
@@ -168,7 +168,7 @@ class SnowflakeSchemaBuilder extends Builder
     /**
      * Check if columns exist on a table.
      */
-    public function hasColumns($table, array $columns): bool
+    public function hasColumns($table, array $columns)
     {
         $tableColumns = array_map(
             fn ($col) => strtolower($col['name']),
@@ -187,7 +187,7 @@ class SnowflakeSchemaBuilder extends Builder
     /**
      * Drop all tables in the database.
      */
-    public function dropAllTables(): void
+    public function dropAllTables()
     {
         $tables = $this->getTables();
 
@@ -203,7 +203,7 @@ class SnowflakeSchemaBuilder extends Builder
     /**
      * Drop all views in the database.
      */
-    public function dropAllViews(): void
+    public function dropAllViews()
     {
         $views = $this->getViews();
 
@@ -217,7 +217,7 @@ class SnowflakeSchemaBuilder extends Builder
     /**
      * Create a new table blueprint.
      */
-    protected function createBlueprint($table, ?Closure $callback = null): SnowflakeBlueprint
+    protected function createBlueprint($table, ?Closure $callback = null)
     {
         return new SnowflakeBlueprint($this->connection, $table, $callback);
     }
@@ -225,7 +225,7 @@ class SnowflakeSchemaBuilder extends Builder
     /**
      * Get the column type for a given column name.
      */
-    public function getColumnType(string $table, string $column, bool $fullDefinition = false): string
+    public function getColumnType($table, $column, $fullDefinition = false)
     {
         $columns = $this->getColumns($table);
 
@@ -243,7 +243,7 @@ class SnowflakeSchemaBuilder extends Builder
      *
      * @return array<int, string>
      */
-    public function getColumnListing($table): array
+    public function getColumnListing($table)
     {
         return array_map(
             fn ($col) => $col['name'],
