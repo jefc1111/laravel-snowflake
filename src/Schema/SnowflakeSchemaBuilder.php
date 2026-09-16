@@ -99,7 +99,7 @@ class SnowflakeSchemaBuilder extends Builder
 
         return $this->connection->getPostProcessor()->processColumns(
             $this->connection->selectFromWriteConnection(
-                $this->grammar->compileColumns($database, $schema, $table)
+                $this->grammar->compileColumns($schema, $table)
             )
         );
     }
