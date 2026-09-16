@@ -96,13 +96,13 @@ class SnowflakeProcessor extends Processor
         return array_map(function ($result) {
             $result = (object) $result;
 
-            $columnDefault = $result->COLUMN_DEFAULT ?? $result->column_default ?? null;
+            $columnDefault = $result->COLUMN_DEFAULT ?? $result->column_default ?? $result->default ?? null;
 
             return [
-                'name' => $result->COLUMN_NAME ?? $result->column_name ?? '',
-                'type_name' => $result->DATA_TYPE ?? $result->data_type ?? '',
+                'name' => $result->COLUMN_NAME ?? $result->column_name ?? $result->name ?? '',
+                'type_name' => $result->DATA_TYPE ?? $result->data_type ?? $result->type_name ?? '',
                 'type' => $this->normalizeColumnType($result),
-                'nullable' => ($result->IS_NULLABLE ?? $result->is_nullable ?? 'YES') === 'YES',
+                'nullable' => ($result->IS_NULLABLE ?? $result->is_nullable ?? $result->nullable ?? 'YES') === 'YES',
                 'default' => $columnDefault,
                 'auto_increment' => $columnDefault !== null && str_contains((string) $columnDefault, 'IDENTITY'),
                 'comment' => $result->COMMENT ?? $result->comment ?? null,
@@ -116,12 +116,12 @@ class SnowflakeProcessor extends Processor
      */
     private function normalizeColumnType(object $result): string
     {
-        $type = strtoupper($result->DATA_TYPE ?? $result->data_type ?? '');
+        $type = strtoupper($result->DATA_TYPE ?? $result->data_type ?? $result->type_name ?? '');
 
         // Add precision/scale for numeric types
         if (in_array($type, ['NUMBER', 'DECIMAL', 'NUMERIC'])) {
-            $precision = $result->NUMERIC_PRECISION ?? $result->numeric_precision ?? null;
-            $scale = $result->NUMERIC_SCALE ?? $result->numeric_scale ?? null;
+            $precision = $result->NUMERIC_PRECISION ?? $result->numeric_precision ?? $result->precision ?? null;
+            $scale = $result->NUMERIC_SCALE ?? $result->numeric_scale ?? $result->scale ??  null;
 
             if ($precision !== null) {
                 $type .= "({$precision}" . ($scale !== null ? ",{$scale}" : '') . ')';
@@ -130,7 +130,7 @@ class SnowflakeProcessor extends Processor
 
         // Add length for string types
         if (in_array($type, ['VARCHAR', 'CHAR', 'STRING', 'TEXT'])) {
-            $length = $result->CHARACTER_MAXIMUM_LENGTH ?? $result->character_maximum_length ?? null;
+            $length = $result->CHARACTER_MAXIMUM_LENGTH ?? $result->character_maximum_length ?? $result->length ?? null;
 
             if ($length !== null) {
                 $type .= "({$length})";
