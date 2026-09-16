@@ -24,7 +24,7 @@ class SnowflakeBlueprint extends Blueprint
      * - Generated client-side (no sequence needed)
      * - Distributed-safe
      */
-    public function id($column = 'id'): ColumnDefinition
+    public function id($column = 'id')
     {
         return $this->ulidPrimary($column);
     }
@@ -32,15 +32,15 @@ class SnowflakeBlueprint extends Blueprint
     /**
      * Create a ULID column as the primary key.
      */
-    public function ulidPrimary(string $column = 'id'): ColumnDefinition
+    public function ulidPrimary(string $column = 'id', $length = 26)
     {
-        return $this->char($column, 26)->primary();
+        return $this->char($column, $length)->primary();
     }
 
     /**
      * Create a UUID column as the primary key.
      */
-    public function uuidPrimary(string $column = 'id'): ColumnDefinition
+    public function uuidPrimary(string $column = 'id')
     {
         return $this->uuid($column)->primary();
     }
@@ -48,7 +48,7 @@ class SnowflakeBlueprint extends Blueprint
     /**
      * Create a ULID column (not primary key).
      */
-    public function ulid($column = 'ulid', $length = 26): ColumnDefinition
+    public function ulid($column = 'ulid', $length = 26)
     {
         return $this->addColumn('ulid', $column);
     }
@@ -225,7 +225,7 @@ class SnowflakeBlueprint extends Blueprint
      *
      * Uses TIMESTAMP_NTZ for Snowflake compatibility.
      */
-    public function timestamps($precision = null): void
+    public function timestamps($precision = null)
     {
         $this->timestampNtz('created_at')->nullable();
         $this->timestampNtz('updated_at')->nullable();
@@ -234,7 +234,7 @@ class SnowflakeBlueprint extends Blueprint
     /**
      * Create nullable timestamps with timezone.
      */
-    public function timestampsTz($precision = null): void
+    public function timestampsTz($precision = null)
     {
         $this->timestampTz('created_at')->nullable();
         $this->timestampTz('updated_at')->nullable();
@@ -245,7 +245,7 @@ class SnowflakeBlueprint extends Blueprint
      *
      * Uses TIMESTAMP_NTZ for Snowflake compatibility.
      */
-    public function softDeletes($column = 'deleted_at', $precision = null): ColumnDefinition
+    public function softDeletes($column = 'deleted_at', $precision = null)
     {
         return $this->timestampNtz($column)->nullable();
     }
@@ -253,7 +253,7 @@ class SnowflakeBlueprint extends Blueprint
     /**
      * Create a soft delete column with timezone.
      */
-    public function softDeletesTz($column = 'deleted_at', $precision = null): ColumnDefinition
+    public function softDeletesTz($column = 'deleted_at', $precision = null)
     {
         return $this->timestampTz($column)->nullable();
     }
@@ -261,7 +261,7 @@ class SnowflakeBlueprint extends Blueprint
     /**
      * Add a foreign ULID column.
      */
-    public function foreignUlid($column, $length = 26): ColumnDefinition
+    public function foreignUlid($column, $length = 26)
     {
         return $this->char($column, $length);
     }
